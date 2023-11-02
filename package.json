@@ -25,6 +25,7 @@
     "pnpm": "8.x"
   },
   "dependencies": {
+    "circom_tester": "^0.0.20",
     "circomlib": "^2.0.5"
   }
 }
