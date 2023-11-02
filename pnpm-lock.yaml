@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      circomlib:
+        specifier: ^2.0.5
+        version: 2.0.5
     devDependencies:
       '@latticexyz/cli':
         specifier: 2.0.0-next.12
@@ -120,7 +124,7 @@ importers:
         version: 18.18.8
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: git@github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: git/github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
         version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
@@ -2006,6 +2010,10 @@ packages:
       readdirp: 3.6.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  /circomlib@2.0.5:
+    resolution: {integrity: sha512-O7NQ8OS+J4eshBuoy36z/TwQU0YHw8W3zxZcs4hVwpEll3e4hDm3mgkIPqItN8FDeLEKZFK3YeT/+k8TiLF3/A==}
+    dev: false
 
   /cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
@@ -4341,7 +4349,7 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  git@github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0:
+  git/github.com+dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0:
     resolution: {commit: e282159d5170298eb2455a6c05280ab5a73a4ef0, repo: git@github.com:dapphub/ds-test.git, type: git}
     name: ds-test
     version: 1.0.0
