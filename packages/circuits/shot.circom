@@ -1,8 +1,8 @@
 pragma circom 2.0.3;
 
-include "../../node_modules/circomlib/circuits/mimcsponge.circom";
-include "../../node_modules/circomlib/circuits/gates.circom";
-include "../../node_modules/circomlib/circuits/comparators.circom";
+include "./node_modules/circomlib/circuits/mimcsponge.circom";
+include "./node_modules/circomlib/circuits/gates.circom";
+include "./node_modules/circomlib/circuits/comparators.circom";
 include "./templates/hitShip.circom";
 
 /*
@@ -21,6 +21,10 @@ template shot() {
     signal _ors[4]; // or result registry
 
     /// SHOT RANGE CHECK ///
+    component n2bX = Num2Bits(4);
+    n2bX.in <== shot[0];
+    component n2bY = Num2Bits(4);
+    n2bY.in <== shot[1];
     component ltX = LessThan(4);
     component ltY = LessThan(4);
     ltX.in[0] <== shot[0];

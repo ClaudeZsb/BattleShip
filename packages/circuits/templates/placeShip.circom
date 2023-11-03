@@ -1,8 +1,8 @@
 pragma circom 2.0.3;
 
-include "../../../node_modules/circomlib/circuits/mux1.circom";
-include "../../../node_modules/circomlib/circuits/multiplexer.circom";
-include "../../../node_modules/circomlib/circuits/bitify.circom";
+include "../node_modules/circomlib/circuits/mux1.circom";
+include "../node_modules/circomlib/circuits/multiplexer.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
 
 template PowerOf2(max) {
     assert(max < 253);
@@ -27,6 +27,8 @@ template PowerOf2(max) {
 template PlaceShip(n) {
     signal input boardIn; // numerical representation of board bitmap before ship placement
     signal input ship[3]; // x, y, z of ships
+    // log("board", boardIn);
+    // log("ship", ship[0], ship[1], ship[2]);
     signal output boardOut; // numerical representation of board bitmap after ship placement
     
     /// INITIALIZE CONSTRUCTS ///
@@ -54,8 +56,8 @@ template PlaceShip(n) {
     component power10X = PowerOf2(90);
     power10X.in <== ship[0] * 10;
     var powXY = power10X.out * powY;
-    signal shipValueH <== ((2 ** n) - 1) * powXY;
-    signal shipValueV <== n * powXY + n * (n - 1) / 2;
+    signal shipValueH <== (((2 ** 10) ** n) - 1) / ((2 ** 10) - 1) * powXY; // q = 2**10, Sn = a1 * (q^n - 1) / (q - 1)
+    signal shipValueV <== ((2 ** n) - 1) * powXY;
 
     /// HORIZONTAL PLACEMENT COLLISION CHECK ///
     // 1. use Multiplexer find the ith line
@@ -63,10 +65,13 @@ template PlaceShip(n) {
     muxH.inp <== boardH;
     muxH.sel <== ship[1];
     signal lineH[10] <== muxH.out;
+    // log("H ith line", lineH[0], lineH[1], lineH[2], lineH[3], lineH[4], lineH[5], lineH[6], lineH[7], lineH[8], lineH[9]);
     // 2. represent ship in binary array
-    component n2bH = Num2Bits(10);
+    component n2bH = Num2Bits(15);
     n2bH.in <== powX * ((2 ** n) - 1);
-    signal shipH[10] <== n2bH.out;
+    signal shipH[10];
+    for (var i = 0; i < 10; i++) shipH[i] <== n2bH.out[i];
+    // signal shipH[10] <== n2bH.out;
     // 3. calculate escalar product of ith line and ship binary
     component eproductH = EscalarProduct(10);
     eproductH.in1 <== lineH;
@@ -81,10 +86,13 @@ template PlaceShip(n) {
     muxV.inp <== boardV;
     muxV.sel <== ship[0];
     signal lineV[10] <== muxV.out;
+    // log("V ith line", lineV[0], lineV[1], lineV[2], lineV[3], lineV[4], lineV[5], lineV[6], lineV[7], lineV[8], lineV[9]);
     // 2. represent ship in binary array
-    component n2bV = Num2Bits(10);
+    component n2bV = Num2Bits(15);
     n2bV.in <== powY * ((2 ** n) - 1);
-    signal shipV[10] <== n2bV.out;
+    signal shipV[10];
+    for (var i = 0; i < 10; i++) shipV[i] <== n2bV.out[i];
+    // signal shipV[10] <== n2bV.out;
     // 3. calculate escalar product of ith line and ship binary
     component eproductV = EscalarProduct(10);
     eproductV.in1 <== lineV;
@@ -95,8 +103,10 @@ template PlaceShip(n) {
 
     /// CHOOSE COLLISION CHECK RESULT ///
     ship[2] * (1 - ship[2]) === 0; // z coordinate as selector for horizontal/ vertical
+    // log("check result vertical", checkResultV);
+    // log("check result horizontal", checkResultH);
     (checkResultV - checkResultH) * ship[2] + checkResultH === 0; // expect 0 if no collisions
 
     /// CHOOSE AND OUTPUT NEXT BOARD STATE ///
-    boardOut <== boardOutH + ship[2] * (boardOutH - boardOutV);
+    boardOut <== boardOutH + ship[2] * (boardOutV - boardOutH);
 }

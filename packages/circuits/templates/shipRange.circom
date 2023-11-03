@@ -1,7 +1,7 @@
 pragma circom 2.0.3;
 
-include "../../../node_modules/circomlib/circuits/mux1.circom";
-include "../../../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/mux1.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
 
 /*
    Fail if ship is not in range
@@ -13,6 +13,12 @@ template ShipRange(n) {
     signal isOk[2]; // horizontal and vertical range compliance
     component lt[4];
     component muxOk = Mux1();
+
+    // range check for x and y
+    component n2bX = Num2Bits(4);
+    n2bX.in <== ship[0];
+    component n2bY = Num2Bits(4);
+    n2bY.in <== ship[1];
 
     /// HORIZONTAL ///
     // x + n < 10

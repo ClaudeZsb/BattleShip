@@ -2,8 +2,8 @@ pragma circom 2.0.3;
 
 include "./templates/shipRange.circom";
 include "./templates/placeShip.circom";
-include "../../node_modules/circomlib/circuits/bitify.circom";
-include "../../node_modules/circomlib/circuits/mimcsponge.circom";
+include "./node_modules/circomlib/circuits/bitify.circom";
+include "./node_modules/circomlib/circuits/mimcsponge.circom";
 
 /*
     Validate whether or not a ship placement on a board is valid
