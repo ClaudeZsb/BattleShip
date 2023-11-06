@@ -1,8 +1,6 @@
 pragma circom 2.0.3;
 
-include "../node_modules/circomlib/circuits/mux1.circom";
-include "../node_modules/circomlib/circuits/bitify.circom";
-
+include "../node_modules/circomlib/circuits/comparators.circom";
 
 /*
     Determine whether or not a given ship uses a given x/y coordinate pair
@@ -15,24 +13,31 @@ template HitShip(n) {
     signal output hit; // 0 if not hit, 1 if hit
 
     /// HORIZONTAL CONSTRAINT ///
-    var hHit = 0;
-    for (var i = 0; i < n; i++) {
-        var _x = (ship[0] + i == shot[0]);
-        var _y = (ship[1] == shot[1]);
-        hHit += 1 * (_x == 1 && _y == 1);
-    }
-    /// VERTICAL CONSTRAINT ///
-    var vHit = 0;
-    for (var i = 0; i < n; i++) {
-        var _x = (ship[0] == shot[0]);
-        var _y = (ship[1] + i == shot[1]);
-        vHit += 1 * (_x == 1 && _y == 1);
-    }
+    component hYEq = IsEqual();
+    hYEq.in[0] <== shot[1];
+    hYEq.in[1] <== ship[1];
+    component hXLeft = GreaterEqThan(4);
+    hXLeft.in[0] <== shot[0];
+    hXLeft.in[1] <== ship[0];
+    component hXRight = LessThan(4);
+    hXRight.in[0] <== shot[0];
+    hXRight.in[1] <== ship[0] + n;
+    signal hX <== hXLeft.out * hXRight.out;
+    signal hHit <== hX * hYEq.out;
 
-    /// MUX TO CHOOSE OUTPUT ///
-    component mux = Mux1();
-    mux.c[0] <-- hHit;
-    mux.c[1] <-- vHit;
-    mux.s <== ship[2];
-    hit <== mux.out;
+    /// VERTICAL CONSTRAINT ///
+    component vXEq = IsEqual();
+    vXEq.in[0] <== shot[0];
+    vXEq.in[1] <== ship[0];
+    component vYDown = GreaterEqThan(4);
+    vYDown.in[0] <== shot[1];
+    vYDown.in[1] <== ship[1];
+    component vYUp = LessThan(4);
+    vYUp.in[0] <== shot[1];
+    vYUp.in[1] <== ship[1] + n;
+    signal vY <== vYDown.out * vYUp.out;
+    signal vHit <== vY * vXEq.out;
+
+    /// CHOOSE OUTPUT ///
+    hit <== hHit + (vHit - hHit) * ship[2];
 }
